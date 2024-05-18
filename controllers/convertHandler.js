@@ -2,8 +2,7 @@ function ConvertHandler() {
   // Method to extract the numeric value from the input string
   this.getNum = function(input) {
     const valRegex = /^(\w+)?(?:^\d+(?:(\.\d+(\/\d+(\.\d+)?)?)|(\/\d+(\.\d+)?))?)?(\w+)$/i;
-    const noNumRegex = /^(Kg|lbs|L|gal|Km|mi)$/i;
-
+    const noNumRegex = /^(kg|lbs|L|gal|km|mi)$/i;
     const isValid = valRegex.test(input);
     const isNoNum = noNumRegex.test(input); 
 
@@ -41,14 +40,13 @@ function ConvertHandler() {
         return result;
       }
     }
-    result = '1'
+    result = 1;
     return result;
   };
   
   // Method to extract the unit from the input string
   this.getUnit = function(input) {
-    const unitRegex = /(Kg|lbs|L|gal|Km|mi)$/gi;
-    
+    const unitRegex = /(kg|lbs|L|gal|km|mi)$/gi;
     const isValid = unitRegex.test(input);
   
     let result;
@@ -56,7 +54,13 @@ function ConvertHandler() {
     if (!isValid) {
       return null; 
     }
+    
     result = input.match(unitRegex).join('');
+    if (result === 'L' || result === 'l') {
+      result = result.toUpperCase();
+    } else {
+      result = result.toLowerCase();
+    }
     return result;
   };
   
@@ -64,21 +68,18 @@ function ConvertHandler() {
   this.getReturnUnit = function(initUnit) {
     let result;
     const unitsArr = [
-      ['Km', 'mi'],
-      ['Kg', 'lbs'],
+      ['km', 'mi'],
+      ['kg', 'lbs'],
       ['L', 'gal']
     ];
 
     unitsArr.forEach(elem => {
-      const fixElem = elem.map(str => str.toLowerCase());
-      const fixUnit = initUnit.toLowerCase();
-
-      if (fixElem.includes(fixUnit)) {
+      if (elem.includes(initUnit)) {
         switch (true) {
-          case (fixElem[0] === fixUnit):
+          case (elem[0] === initUnit):
             result = elem[1];
             break;
-          case (fixElem[1] === fixUnit):
+          case (elem[1] === initUnit):
             result = elem[0];
             break
           default:
@@ -93,8 +94,8 @@ function ConvertHandler() {
   // Method to spell out the full name of a given unit
   this.spellOutUnit = function(unit) {
     const unitsName = {
-      'Km': 'kilometers',
-      'Kg': 'kilograms',
+      'km': 'kilometers',
+      'kg': 'kilograms',
       'L': 'liters',
       'mi': 'miles',
       'lbs': 'pounds',
@@ -104,7 +105,7 @@ function ConvertHandler() {
     let result;
 
     for (unitName in unitsName) {
-      if (unit.toLowerCase() === unitName.toLowerCase()) {
+      if (unit === unitName) {
         result = unitsName[unitName];
         break;
       }
@@ -116,27 +117,24 @@ function ConvertHandler() {
   // Method to perform the conversion based on initial number and unit
   this.convert = function(initNum, initUnit) {
     const galToL = 3.78541;
-    const lbsToKg = 0.453592;
-    const miToKm = 1.60934;
+    const lbsTokg = 0.453592;
+    const miTokm = 1.60934;
 
     const unitsArr = [
-      ['Km', 'mi', miToKm],
-      ['Kg', 'lbs', lbsToKg],
+      ['km', 'mi', miTokm],
+      ['kg', 'lbs', lbsTokg],
       ['L', 'gal', galToL]
     ];
 
-    let result;
+    let result = 1;
 
     unitsArr.forEach(elem => {
-      const fixElem = elem.map(item => typeof item === 'string' ? item.toLowerCase(): item);
-      const fixUnit = initUnit.toLowerCase();
-
-      if (fixElem.includes(fixUnit)) {
+      if (elem.includes(initUnit)) {
         switch (true) {
-          case (fixElem[0] === fixUnit):
+          case (elem[0] === initUnit):
             result = initNum / elem[2];
             break;
-          case (fixElem[1] === fixUnit):
+          case (elem[1] === initUnit):
             result = initNum * elem[2];
             break
           default:

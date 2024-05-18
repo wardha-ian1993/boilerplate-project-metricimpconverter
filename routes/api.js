@@ -15,14 +15,14 @@ module.exports = function (app) {
     const unit = await convertHandler.getUnit(input);
 
     if (!number && !unit) {
-      output = 'Invalid Number and Units'
+      output = 'invalid number and unit'
     } else {
       switch (true) {
         case (!number):
-          output = 'Invalid Number';
+          output = 'invalid number';
           break;
         case (!unit):
-          output = 'Invalid Units';
+          output = 'invalid unit';
           break;
         default:
           const returnNum = convertHandler.convert(number, unit);
